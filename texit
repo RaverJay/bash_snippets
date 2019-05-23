@@ -1,0 +1,24 @@
+#!/bin/bash
+# pdflatex either all .tex files or only <file>[.[tex]]
+
+if [ $# == 0 ]; then
+    T=(*.tex)
+    if [ "${T[0]}" == "*.tex" ]; then
+        echo 'No .tex files here!' >&2
+        exit 1
+    fi
+else
+    T=("${1%.*}.tex")
+    if [ ! -f "$T" ]; then
+        echo "No file named $T here!" >&2
+        exit 1
+    fi
+fi
+for F in ${T[@]}; do
+    B=${F%.*}
+    pdflatex "$B"
+    if [ -f "${B}.aux" ]; then
+        bibtex "$B" && pdflatex "$B"
+    fi
+    pdflatex "$B"
+done

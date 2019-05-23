@@ -1,0 +1,18 @@
+#!/bin/bash
+# bamify - select mapped reads, sort, convert to bam and index
+# by Sebastian Krautwurst
+
+if [ -z "$1" ]
+then
+	echo "No input sam file(s) given!"
+	exit
+fi
+
+while [ ! -z "$1" ]
+do
+	echo -n "$1"
+	BAM="${1%.sam}".bam
+	samtools view -h -F4 "$1" | samtools sort | samtools view -hb > "$BAM" && samtools index "$BAM"
+	echo " bamified to $BAM"
+	shift
+done

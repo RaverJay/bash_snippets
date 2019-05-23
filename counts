@@ -1,0 +1,4 @@
+#!/bin/bash
+# output occurences in descending order
+# SK
+sort <&0 | uniq -c | sort -nr

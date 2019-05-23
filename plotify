@@ -1,0 +1,29 @@
+#!/bin/bash
+# plotify - minimap2 some reads ($2,$3,...) to some reference ($1) and plot the coverage
+# by Sebastian Krautwurst
+
+if [ -z "$1" ]
+then
+	echo "No input given!"
+	exit 1
+elif [ -z "$2" ]
+then
+    echo "No input reads given!"
+    exit 1
+fi
+
+REF="$1"
+shift
+
+while [ ! -z "$1" ]
+do
+	echo "Plotify $1 ..."
+    BN=$(basename "$1")
+	BAM="${BN}".bam
+	minimap2 -ax map-ont "$REF" "$1" | samtools view -h -F4 | samtools sort | samtools view -hb > "$BAM" && samtools index "$BAM"
+	echo "Mapped $1 and bamified to $BAM"
+    plotCoverageExons.py -o "${BAM%.*}.pdf" "$BAM"
+    echo "Plotted coverage to ${BAM%.*}.pdf"
+	shift
+done
+
